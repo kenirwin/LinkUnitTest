@@ -38,6 +38,7 @@ class LinkUnit
         print "<li>Body Size: $this->body_size Bytes</li>";
         print '<li>Total Time: '.$this->time.' seconds</li>';
         print '<li>HTTP Code: '. $this->http_code.'</li>';
+        //        print '<pre>'.htmlspecialchars($this->body).'</body>';
     }
     
     public function testSummary() {
@@ -50,6 +51,7 @@ class LinkUnit
         print '<li>Tests passed: '.sizeof($this->tests_passed).'</li>';
         print '<li>Tests failed: '.sizeof($this->tests_failed).'</li>';
         print '</ul>';
+        print '<hr>';
     }
 
     private function recordTest($result, $test, $args) {
