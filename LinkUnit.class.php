@@ -1,6 +1,7 @@
 <?
 class LinkUnit
 {
+    public $url;
     public $header_size;
     public $header;
     public $body_size;
@@ -9,9 +10,11 @@ class LinkUnit
     public $http_code;
     private $tests_passed = array();
     private $tests_failed = array();
+    private $table_lines;
 
     //    public $header_size
     public function getURL($url) {
+        $this->url = $url;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -38,6 +41,10 @@ class LinkUnit
     }
     
     public function testSummary() {
+        print '<h2>URL: '.$this->url.'</h2>';
+        print '<table>';
+        print '<thead><tr><td>Test Type</td> <td>Arguments</td> <td>Result</td></tr></thead>';
+        print $this->table_lines.'</table>';
         print '<h3>URL Summary</h3>';
         print '<ul>';
         print '<li>Tests passed: '.sizeof($this->tests_passed).'</li>';
@@ -54,19 +61,23 @@ class LinkUnit
         else {
             array_push($this->tests_failed, $test_info);
         }
+
+        $this->table_lines .= '<tr><td>'.$test.'</td><td>'.print_r($args,true).'</td><td>'.print_r($result,true).'</td></tr>';
     }
 
     public function testHasText($str) {
         $result = $this->hasText($str);
-        $this->recordTest($result, __FUNCTION__, $argv);
-        print '<li>Testing: has Text: <b>'.$str.'</b><br>';
-        print '<div class="result">'.var_dump($result).'</div>';
-        print '</li>';
-        
+        $this->recordTest($result, __FUNCTION__, func_get_args());
     }
 
-    public function HttpCode($code) {
+    public function testHttpCode($code) {
         $result = ($this->http_code == $code);
+        $this->recordTest($result, __FUNCTION__, func_get_args());
+    }
+
+    public function testFasterThan($seconds) {
+        $result = (floatval($this->time) < floatval($seconds));
+        $this->recordTest($result, __FUNCTION__, func_get_args());
     }
 
     private function hasText($regex) {
