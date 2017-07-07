@@ -21,8 +21,8 @@ class LinkUnit
         $info = curl_getinfo($ch);
         //        var_dump($info);
         $this->header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $this->header = substr($response, 0, $header_size);
-        $this->body = substr($response, $header_size);
+        $this->header = substr($response, 0, $this->header_size);
+        $this->body = substr($response, $this->header_size);
         $this->body_size = curl_getinfo($ch, CURLINFO_SIZE_DOWNLOAD);
         $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $this->time = curl_getinfo($ch, CURLINFO_TOTAL_TIME);
@@ -45,19 +45,28 @@ class LinkUnit
         print '</ul>';
     }
 
-    public function testHasText($str) {
-        $result = $this->hasText($str);
-        $test_info = ['test'=>'testHasText','var'=>$str];
+    private function recordTest($result, $test, $args) {
+        $test_info = array('test' => $test,
+                           'args' => $args);
         if ($result === true) { 
             array_push($this->tests_passed, $test_info);
         }
         else {
             array_push($this->tests_failed, $test_info);
         }
+    }
+
+    public function testHasText($str) {
+        $result = $this->hasText($str);
+        $this->recordTest($result, __FUNCTION__, $argv);
         print '<li>Testing: has Text: <b>'.$str.'</b><br>';
         print '<div class="result">'.var_dump($result).'</div>';
         print '</li>';
         
+    }
+
+    public function HttpCode($code) {
+        $result = ($this->http_code == $code);
     }
 
     private function hasText($regex) {
